@@ -34,23 +34,23 @@ rows = int(get_input(1000))
 print('Size horizontally:')
 columns = int(get_input(1000))
 print('Number of creatures:')
-number_of_creatures = int(get_input(40))
+number_of_creatures = int(get_input(8))
 print('Percentage of carnivores:')
 per = int(get_input(7))
 print('Speed of creatures relative to size:')
-spc = get_input(0.3)
-spc = size*spc
+creature_speed = get_input(0.1)
+creature_speed = size*creature_speed
 print('Lifespan:')
 life = int(get_input(200))
 half_life = int(life/2)
 print('Randomness of movement:')
 vertex = int(get_input(3))
 print('Number of plants:')
-number_of_plants = int(get_input(20))
+number_of_plants = int(get_input(50))
 print('Percentage of plant spread:')
 perplant = get_input(10)
 print('Speed(s)(0.1-5):')
-speed = get_input(0.01)
+game_speed = get_input(0.01)
 
 ##Board creation
 sim = Tk()
@@ -60,82 +60,57 @@ canvas.create_rectangle(10,10,columns,rows)
 
 ##Creature creation
 class creature:
-    def init(self,x,y,age):
+    def init(self,x,y,speed,age):
         self.x = x
         self.y = y
-        self.gx = self.x
-        self.gy = self.y
-        self.movenum = 0
+        self.dest_x = self.x
+        self.dest_y = self.y
+        self.speed = speed
         self.age = age
     ##Creature movement
     def move(self):
         while True:
-            if ((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2))<spc:
-                self.movenum = self.movenum+1
-                self.gx = random.randint(10, columns-size)
-                self.gy = random.randint(10, rows-size)
-                self.u = atan2(self.gy-self.y,self.gx-self.x)
+            ## If we have reached the point of destination
+            if dist([self.x,self.y],[self.dest_x,self.dest_y]) < self.speed:
+
+                ## New destination
+                self.dest_x = random.randint(10, columns-size)
+                self.dest_y = random.randint(10, rows-size)
+
+                angle_to_dest = atan2(self.dest_y-self.y,self.dest_x-self.x)
+
+                ## New intermediate destination
                 while True:
-                    self.dis2 = random.randint(int(-(((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2)))/2), int((((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2)))/2))
-                    self.gx2 = (self.x+self.gx)/2+self.dis2*cos(self.u+pi/2)
-                    self.gy2 = (self.y+self.gy)/2+self.dis2*sin(self.u+pi/2)
-                    self.u = atan2(self.gy2-self.y,self.gx2-self.x)
-                    while True:
-                        self.dis3 = random.randint(int(-(((self.x-self.gx2)**2+(self.y-self.gy2)**2)**(1/float(2)))/2), int((((self.x-self.gx2)**2+(self.y-self.gy2)**2)**(1/float(2)))/2))
-                        self.gx3 = (self.x+self.gx2)/2+self.dis3*cos(self.u+pi/2)
-                        self.gy3 = (self.y+self.gy2)/2+self.dis3*sin(self.u+pi/2)
-                        self.u = atan2(self.gy3-self.y,self.gx3-self.x)
-                        if self.gx3 > 10 and self.gx3 < columns-size and self.gy3 > 10 and self.gy3 < rows-size:
-                            break
-                    if self.gx2 > 10 and self.gx2 < columns-size and self.gy2 > 10 and self.gy2 < rows-size:
+
+                    distance_to_dest = dist([self.x,self.y],[self.dest_x,self.dest_y])
+                    distance_along = random.randint(1,int(distance_to_dest))
+
+                    point_along_x = self.x+distance_to_dest*cos(angle_to_dest)
+                    point_along_y = self.y+distance_to_dest*sin(angle_to_dest)
+
+                    distance_sideways = random.randint(-int(distance_to_dest/2),int(distance_to_dest/2))
+
+                    self.inter_dest_x = point_along_x+distance_sideways*cos(angle_to_dest+pi/2)
+                    self.inter_dest_y = point_along_y+distance_sideways*sin(angle_to_dest+pi/2)
+
+                    if self.inter_dest_x >= 10 and self.inter_dest_x <= columns-size and self.inter_dest_y >= 10 and self.inter_dest_y < rows-size:
                         break
-#                canvas.create_rectangle(self.gx3,self.gy3,self.gx3+2,self.gy3+2,outline='blue')
-            elif ((self.x-self.gx2)**2+(self.y-self.gy2)**2)**(1/float(2))<spc:
-                self.movenum = self.movenum+1
-                self.u = atan2(self.gy-self.y,self.gx-self.x)
-                while True:
-                    self.dis3 = random.randint(int(-(((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2)))/2), int((((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2)))/2))
-                    self.gx3 = (self.x+self.gx)/2+self.dis3*cos(self.u+pi/2)
-                    self.gy3 = (self.y+self.gy)/2+self.dis3*sin(self.u+pi/2)
-                    self.u = atan2(self.gy3-self.y,self.gx3-self.x)
-                    if self.gx3 > 10 and self.gx3 < columns-size and self.gy3 > 10 and self.gy3 < rows-size:
-                        break
-#                canvas.create_rectangle(self.gx3,self.gy3,self.gx3+2,self.gy3+2,outline='blue')
-            elif ((self.x-self.gx3)**2+(self.y-self.gy3)**2)**(1/float(2))<spc:
-                self.movenum = self.movenum+1
-                if (self.movenum//2)%2 == 1:
-                    self.u = atan2(self.gy2-self.y,self.gx2-self.x)
-#                    canvas.create_rectangle(self.gx2,self.gy2,self.gx2+2,self.gy2+2,outline='red')
-                elif (self.movenum//2)%2 == 0:
-                    self.u = atan2(self.gy-self.y,self.gx-self.x)
-#                    canvas.create_rectangle(self.gx,self.gy,self.gx+2,self.gy+2,outline='orange')
-            self.xa = self.x+spc*cos(self.u)
-            self.ya = self.y+spc*sin(self.u)
-            if self.xa >= 10 and self.xa+size <= columns and self.ya >= 10 and self.ya+size <= rows:
+
+                canvas.create_rectangle(self.dest_x, self.dest_y, self.dest_x+5, self.dest_y+5, fill='green')
+                canvas.create_rectangle(self.inter_dest_x, self.inter_dest_y, self.inter_dest_x+5, self.inter_dest_y+5, fill='blue')
+                self.angle = atan2(self.inter_dest_y-self.y,self.inter_dest_x-self.x)
+
+            ## If we have reached the intermediate point
+            elif dist([self.x,self.y],[self.inter_dest_x,self.inter_dest_y]) < self.speed:
+                self.angle = atan2(self.dest_y-self.y,self.dest_x-self.x)
+
+            ## Update coordinates
+            x_attempt = self.x+self.speed*cos(self.angle)
+            y_attempt = self.y+self.speed*sin(self.angle)
+            if x_attempt >= 10 and x_attempt+size <= columns and y_attempt >= 10 and y_attempt+size <= rows:
                 break
-            ##If it were to go off the screen
-            else:
-                self.movenum = self.movenum+1
-                self.gx = random.randint(10+spc, columns-size)
-                self.gy = random.randint(10+spc, rows-size)
-                self.u = atan2(self.gy-self.y,self.gx-self.x)
-                while True:
-                    self.dis2 = random.randint(int(-(((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2)))/2), int((((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2)))/2))
-                    self.gx2 = (self.x+self.gx)/2+self.dis2*cos(self.u+pi/2)
-                    self.gy2 = (self.y+self.gy)/2+self.dis2*sin(self.u+pi/2)
-                    self.u = atan2(self.gy2-self.y,self.gx2-self.x)
-                    while True:
-                        self.dis3 = random.randint(int(-(((self.x-self.gx2)**2+(self.y-self.gy2)**2)**(1/float(2)))/2), int((((self.x-self.gx2)**2+(self.y-self.gy2)**2)**(1/float(2)))/2))
-                        self.gx3 = (self.x+self.gx2)/2+self.dis3*cos(self.u+pi/2)
-                        self.gy3 = (self.y+self.gy2)/2+self.dis3*sin(self.u+pi/2)
-                        self.u = atan2(self.gy3-self.y,self.gx3-self.x)
-                        if self.gx3 > 10 and self.gx3 < columns-size and self.gy3 > 10 and self.gy3 < rows-size:
-                            break
-                    if self.gx2 > 10 and self.gx2 < columns-size and self.gy2 > 10 and self.gy2 < rows-size:
-                        break
-#                canvas.create_rectangle(self.gx3,self.gy3,self.gx3+2,self.gy3+2,outline='blue')
-        self.x = self.xa
-        self.y = self.ya
+        self.x = x_attempt
+        self.y = y_attempt
         canvas.coords(self.n, int(self.x), int(self.y), int(self.x)+size, int(self.y)+size)
     def tick(self):
         if self.age < life:
@@ -150,24 +125,24 @@ class creature:
 
 ##Carnivore creation
 class carn(creature):
-    def __init__(self,x,y,age):
-        self.init(x,y,age)
+    def __init__(self,x,y,speed,age):
+        self.init(x,y,speed,age)
         self.type = 'carn'
         ## Tag of some sort
         self.n = canvas.create_oval(self.x, self.y, self.x+size, self.y+size, fill='red')
     ## carnivore eating
     def eat(self):
-        for creature in cre:
+        for creature in creatures:
             if dist([self.x,self.y],[creature.x,creature.y]) < size and creature.type == 'herb':
                 canvas.itemconfig(self.n, fill='red')
                 self.age = 1
                 canvas.delete(creature.n)
-                cre.remove(creature)
+                creatures.remove(creature)
 
 ##Herbivore creation
 class herb(creature):
-    def __init__(self,x,y,age):
-        self.init(x,y,age)
+    def __init__(self,x,y,speed,age):
+        self.init(x,y,speed,age)
         self.type = 'herb'
         ## Tag of some sort
         self.n = canvas.create_oval(self.x, self.y, self.x+size, self.y+size, fill='blue', outline='#008080')
@@ -205,11 +180,12 @@ def breed(creature1,creature2):
         if which_parent == 2:
             new_x = creature2.x+size*cos(direction)
             new_y = creature2.y+size*sin(direction)
+        new_speed = random.randint(1,5)*creature_speed
         if new_x > 10 and new_x+size < columns and new_y > 10 and new_y+size < rows:
             if creature1.type == 'herb':
-                cre.append(herb(new_x,new_y,half_life))
+                creatures.append(herb(new_x,new_y,new_speed,half_life))
             elif creature1.type == 'carn':
-                cre.append(carn(new_x,new_y,half_life))
+                creatures.append(carn(new_x,new_y,new_speed,half_life))
             break
 
 
@@ -234,15 +210,16 @@ class Plant():
                 plants.append(Plant(new_x,new_y))
 
 ## List of creatures
-cre= []
+creatures= []
 for _ in range(0, number_of_creatures):
-    zz = random.randint(1, 100)
+    random_percent = random.randint(1, 100)
     x = random.randint(10, columns-size)
     y = random.randint(10, rows-size)
-    if zz <= per:
-        cre.append(carn(x,y,1))
-    elif zz >= per:
-        cre.append(herb(x,y,1))
+    new_speed = random.randint(1, 5)*creature_speed
+    if random_percent <= per:
+        creatures.append(carn(x,y,new_speed,1))
+    else:
+        creatures.append(herb(x,y,new_speed,1))
 
 ## List of plants
 plants = []
@@ -253,18 +230,18 @@ for _ in range(0, number_of_plants):
 
 ##One round
 def move():
-    for u in range(0, len(cre)):
-        cre[u].move()
+    for creature in creatures:
+        creature.move()
     for plant in plants:
         plant.breed()
-    for creature1 in cre:
-        for creature2 in cre:
+    for creature1 in creatures:
+        for creature2 in creatures:
             breed(creature1,creature2)
-    for creature in cre:
+    for creature in creatures:
         creature.eat()
-    for creature in cre:
+    for creature in creatures:
         if(creature.tick()):
-            cre.remove(creature)
+            creatures.remove(creature)
 
 ##Lifespan
 llc=[]
@@ -283,12 +260,12 @@ but = 0
 def update_clock():
     if but == 1:
         move()
-        sim.after(int(speed*1000),update_clock)
+        sim.after(int(game_speed*1000),update_clock)
 def togglemovesquare(event):
     global but
     if but == 0:
         but = 1
-        sim.after(int(speed*1000), update_clock)
+        sim.after(int(game_speed*1000), update_clock)
     elif but == 1:
         but = 0
 def movesquare(event):
