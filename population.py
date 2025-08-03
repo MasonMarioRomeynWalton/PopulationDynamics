@@ -15,7 +15,7 @@ def show_exception_and_exit(exc_type, exc_value, tb):
 sys.excepthook = show_exception_and_exit
 
 ##Input function
-def inputa(nums):
+def get_input(nums):
     while True:
         h = input()
         if h=='':
@@ -28,29 +28,29 @@ def inputa(nums):
 
 ##Inputs
 print('Size of creatures')
-s = int(inputa(20))
+size = int(get_input(20))
 print('Size vertically:')
-rows = int(inputa(1000))
+rows = int(get_input(1000))
 print('Size horizontally:')
-columns = int(inputa(1000))
+columns = int(get_input(1000))
 print('Number of creatures:')
-e = int(inputa(75))
+number_of_creatures = int(get_input(40))
 print('Percentage of carnivores:')
-per = int(inputa(8))
+per = int(get_input(7))
 print('Speed of creatures relative to size:')
-spc = inputa(0.3)
-spc = s*spc
+spc = get_input(0.3)
+spc = size*spc
 print('Lifespan:')
-life = int(inputa(200))
-hl = int(life/2)
+life = int(get_input(200))
+half_life = int(life/2)
 print('Randomness of movement:')
-vertex = int(inputa(3))
+vertex = int(get_input(3))
 print('Number of plants:')
-f = int(inputa(50))
+number_of_plants = int(get_input(20))
 print('Percentage of plant spread:')
-perplant = inputa(10)
+perplant = get_input(10)
 print('Speed(s)(0.1-5):')
-speed = inputa(0.01)
+speed = get_input(0.01)
 
 ##Board creation
 sim = Tk()
@@ -67,12 +67,13 @@ class creature:
         self.gy = self.y
         self.movenum = 0
         self.age = age
+    ##Creature movement
     def move(self):
         while True:
             if ((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2))<spc:
                 self.movenum = self.movenum+1
-                self.gx = random.randint(10, columns-s)
-                self.gy = random.randint(10, rows-s)
+                self.gx = random.randint(10, columns-size)
+                self.gy = random.randint(10, rows-size)
                 self.u = atan2(self.gy-self.y,self.gx-self.x)
                 while True:
                     self.dis2 = random.randint(int(-(((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2)))/2), int((((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2)))/2))
@@ -84,9 +85,9 @@ class creature:
                         self.gx3 = (self.x+self.gx2)/2+self.dis3*cos(self.u+pi/2)
                         self.gy3 = (self.y+self.gy2)/2+self.dis3*sin(self.u+pi/2)
                         self.u = atan2(self.gy3-self.y,self.gx3-self.x)
-                        if self.gx3 > 10 and self.gx3 < columns-s and self.gy3 > 10 and self.gy3 < rows-s:
+                        if self.gx3 > 10 and self.gx3 < columns-size and self.gy3 > 10 and self.gy3 < rows-size:
                             break
-                    if self.gx2 > 10 and self.gx2 < columns-s and self.gy2 > 10 and self.gy2 < rows-s:
+                    if self.gx2 > 10 and self.gx2 < columns-size and self.gy2 > 10 and self.gy2 < rows-size:
                         break
 #                canvas.create_rectangle(self.gx3,self.gy3,self.gx3+2,self.gy3+2,outline='blue')
             elif ((self.x-self.gx2)**2+(self.y-self.gy2)**2)**(1/float(2))<spc:
@@ -97,7 +98,7 @@ class creature:
                     self.gx3 = (self.x+self.gx)/2+self.dis3*cos(self.u+pi/2)
                     self.gy3 = (self.y+self.gy)/2+self.dis3*sin(self.u+pi/2)
                     self.u = atan2(self.gy3-self.y,self.gx3-self.x)
-                    if self.gx3 > 10 and self.gx3 < columns-s and self.gy3 > 10 and self.gy3 < rows-s:
+                    if self.gx3 > 10 and self.gx3 < columns-size and self.gy3 > 10 and self.gy3 < rows-size:
                         break
 #                canvas.create_rectangle(self.gx3,self.gy3,self.gx3+2,self.gy3+2,outline='blue')
             elif ((self.x-self.gx3)**2+(self.y-self.gy3)**2)**(1/float(2))<spc:
@@ -110,13 +111,13 @@ class creature:
 #                    canvas.create_rectangle(self.gx,self.gy,self.gx+2,self.gy+2,outline='orange')
             self.xa = self.x+spc*cos(self.u)
             self.ya = self.y+spc*sin(self.u)
-            if self.xa >= 10 and self.xa+s <= columns and self.ya >= 10 and self.ya+s <= rows:
+            if self.xa >= 10 and self.xa+size <= columns and self.ya >= 10 and self.ya+size <= rows:
                 break
             ##If it were to go off the screen
             else:
                 self.movenum = self.movenum+1
-                self.gx = random.randint(10+spc, columns-s)
-                self.gy = random.randint(10+spc, rows-s)
+                self.gx = random.randint(10+spc, columns-size)
+                self.gy = random.randint(10+spc, rows-size)
                 self.u = atan2(self.gy-self.y,self.gx-self.x)
                 while True:
                     self.dis2 = random.randint(int(-(((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2)))/2), int((((self.x-self.gx)**2+(self.y-self.gy)**2)**(1/float(2)))/2))
@@ -128,150 +129,142 @@ class creature:
                         self.gx3 = (self.x+self.gx2)/2+self.dis3*cos(self.u+pi/2)
                         self.gy3 = (self.y+self.gy2)/2+self.dis3*sin(self.u+pi/2)
                         self.u = atan2(self.gy3-self.y,self.gx3-self.x)
-                        if self.gx3 > 10 and self.gx3 < columns-s and self.gy3 > 10 and self.gy3 < rows-s:
+                        if self.gx3 > 10 and self.gx3 < columns-size and self.gy3 > 10 and self.gy3 < rows-size:
                             break
-                    if self.gx2 > 10 and self.gx2 < columns-s and self.gy2 > 10 and self.gy2 < rows-s:
+                    if self.gx2 > 10 and self.gx2 < columns-size and self.gy2 > 10 and self.gy2 < rows-size:
                         break
 #                canvas.create_rectangle(self.gx3,self.gy3,self.gx3+2,self.gy3+2,outline='blue')
         self.x = self.xa
         self.y = self.ya
-        canvas.coords(self.n, int(self.x), int(self.y), int(self.x)+s, int(self.y)+s)
-    def die(self):
-        if self.age == life:
-            canvas.delete(self.n)
-            self.x = -1
-            self.y = -1
+        canvas.coords(self.n, int(self.x), int(self.y), int(self.x)+size, int(self.y)+size)
+    def tick(self):
         if self.age < life:
-            if self.typ == 'carn':
-                self.age = self.age+1
+            self.age = self.age+1
+            if self.type == 'carn':
                 canvas.itemconfig(self.n, fill=llh[self.age])
-            if self.typ == 'herb':
-                self.age = self.age+1
+            if self.type == 'herb':
                 canvas.itemconfig(self.n, fill=llc[self.age])
+        else:
+            canvas.delete(self.n)
+            return True
 
 ##Carnivore creation
 class carn(creature):
     def __init__(self,x,y,age):
         self.init(x,y,age)
-        self.typ = 'carn'
-        self.n = canvas.create_oval(self.x, self.y, self.x+s, self.y+s, fill='red')
-    def breed(self):
-        for u in range(0,len(cre)):
-            if ((self.x-cre[u].x)**2+(self.y-cre[u].y)**2)**(1/float(2))<s and self.n != cre[u].n and self.n < cre[u].n and cre[u].typ == 'carn' and self.age < hl and cre[u].age < hl:
-                self.age = self.age + hl
-                cre[u].age = cre[u].age + hl
-                self.v = random.randint(1,2)
-                while True:
-                    self.w = random.randint(1,int(2000*pi))
-                    self.w = self.w/1000
-                    if self.v == 1:
-                        self.xa = self.x+s*cos(self.w)
-                        self.ya = self.y+s*sin(self.w)
-                    if self.v == 2:
-                        self.xa = cre[u].x+s*cos(self.w)
-                        self.ya = cre[u].y+s*sin(self.w)
-                    if self.xa > 10 and self.xa+s < columns and self.ya > 10 and self.ya+s < rows:
-                        cre.append(carn(self.xa,self.ya,hl))
-                        break
+        self.type = 'carn'
+        ## Tag of some sort
+        self.n = canvas.create_oval(self.x, self.y, self.x+size, self.y+size, fill='red')
+    ## carnivore eating
     def eat(self):
-        for u in range(0,len(cre)): 
-            if ((self.x-cre[u].x)**2+(self.y-cre[u].y)**2)**(1/float(2))<s and self.n != cre[u].n and cre[u].typ == 'herb':
+        for creature in cre:
+            if dist([self.x,self.y],[creature.x,creature.y]) < size and creature.type == 'herb':
                 canvas.itemconfig(self.n, fill='red')
                 self.age = 1
-                canvas.delete(cre[u].n)
-                cre[u].x = -1
+                canvas.delete(creature.n)
+                cre.remove(creature)
 
 ##Herbivore creation
 class herb(creature):
     def __init__(self,x,y,age):
         self.init(x,y,age)
-        self.typ = 'herb'
-        self.n = canvas.create_oval(self.x, self.y, self.x+s, self.y+s, fill='blue', outline='#008080')
-    def breed(self):
-        for u in range(0,len(cre)):
-            if ((self.x-cre[u].x)**2+(self.y-cre[u].y)**2)**(1/float(2))<s and self.n != cre[u].n and self.n < cre[u].n and cre[u].typ == 'herb' and self.age < hl and cre[u].age < hl:
-                self.age = self.age + hl
-                cre[u].age = cre[u].age + hl
-                self.v = random.randint(1,2)
-                while True:
-                    self.w = random.randint(1,int(2000*pi))
-                    self.w = self.w/1000
-                    if self.v == 1:
-                        self.xa = self.x+s*cos(self.w)
-                        self.ya = self.y+s*sin(self.w)
-                    if self.v == 2:
-                        self.xa = cre[u].x+s*cos(self.w)
-                        self.ya = cre[u].y+s*sin(self.w)
-                    if self.xa > 10 and self.xa+s < columns and self.ya > 10 and self.ya+s < rows:
-                        cre.append(herb(self.xa,self.ya,hl))
-                        break
+        self.type = 'herb'
+        ## Tag of some sort
+        self.n = canvas.create_oval(self.x, self.y, self.x+size, self.y+size, fill='blue', outline='#008080')
+    ## Herbivore eating
     def eat(self):
-        for u in range(0,len(pla)):
-            if ((self.x-pla[u].x)**2+(self.y-pla[u].y)**2)**(1/float(2))<s: 
+        for plant in plants:
+            if dist([self.x,self.y],[plant.x,plant.y]) < size:
                 canvas.itemconfig(self.n, fill='blue')
                 self.age = 1
-                canvas.delete(pla[u].n)
-                pla[u].x = -1
+                canvas.delete(plant.n)
+                plants.remove(plant)
 
-cre = []
-for u in range(0, e):
+def breed(creature1,creature2):
+    ## Check if it's possible to breed
+    possible_to_breed = [dist([creature1.x,creature1.y],[creature2.x,creature2.y])<size,
+                        creature1.n < creature2.n,
+                        creature1.type == creature2.type,
+                        creature1.age < half_life,
+                        creature2.age < half_life]
+
+    if not all(possible_to_breed):
+        return
+
+    creature1.age = creature1.age + half_life
+    creature2.age = creature2.age + half_life
+
+    ## Randomly generate which it'll spawn next to or something
+    which_parent = random.randint(1,2)
+    while True:
+        ## Generate between 0 and 2pi
+        direction = random.randint(1,int(2000*pi))/1000
+        if which_parent == 1:
+            new_x = creature1.x+size*cos(direction)
+            new_y = creature1.y+size*sin(direction)
+        if which_parent == 2:
+            new_x = creature2.x+size*cos(direction)
+            new_y = creature2.y+size*sin(direction)
+        if new_x > 10 and new_x+size < columns and new_y > 10 and new_y+size < rows:
+            if creature1.type == 'herb':
+                cre.append(herb(new_x,new_y,half_life))
+            elif creature1.type == 'carn':
+                cre.append(carn(new_x,new_y,half_life))
+            break
+
+
+
+##Plant creation
+class Plant():
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
+        self.n = canvas.create_oval(self.x, self.y, self.x+size ,self.y+size, fill='lime',)
+    ## Plant spread
+    def breed(self):
+        x = random.randint(1,100000)
+        if x <= perplant*1000:
+            direction = random.randint(1,int(2000*pi))/1000
+            new_x = self.x+size*cos(direction)
+            new_y = self.y+size*sin(direction)
+            if new_x > 10 and new_x+size < columns and new_y > 10 and new_y+size < rows:
+                for plant in plants:
+                    if dist([new_x,new_y],[plant.x,plant.y]) < size and self.n != plant.n:
+                        return
+                plants.append(Plant(new_x,new_y))
+
+## List of creatures
+cre= []
+for _ in range(0, number_of_creatures):
     zz = random.randint(1, 100)
-    x = random.randint(10, columns-s)
-    y = random.randint(10, rows-s)
+    x = random.randint(10, columns-size)
+    y = random.randint(10, rows-size)
     if zz <= per:
         cre.append(carn(x,y,1))
     elif zz >= per:
         cre.append(herb(x,y,1))
 
-##Plant creation
-class plant():
-    def __init__(self,x,y):
-        self.x = x
-        self.y = y
-        self.n = canvas.create_oval(self.x, self.y, self.x+s ,self.y+s, fill='lime',)
-    def breed(self):
-        x = random.randint(1,100000)
-        if x <= perplant*1000:
-            self.w = random.randint(1,int(2000*pi))
-            self.w = self.w/1000
-            self.xa = self.x+s*cos(self.w)
-            self.ya = self.y+s*sin(self.w)
-            if self.xa > 10 and self.xa+s < columns and self.ya > 10 and self.ya+s < rows:
-                for u in range(0,len(pla)):
-                    if ((self.xa-pla[u].x)**2+(self.ya-pla[u].y)**2)**(1/float(2))<s and self.n != pla[u].n:
-                        return
-                pla.append(plant(self.xa,self.ya))
-
-pla = []
-for d in range(0, f):
-    x = random.randint(10, columns-s)
-    y = random.randint(10, rows-s)
-    pla.append(plant(x,y))
+## List of plants
+plants = []
+for _ in range(0, number_of_plants):
+    x = random.randint(10, columns-size)
+    y = random.randint(10, rows-size)
+    plants.append(Plant(x,y))
 
 ##One round
 def move():
     for u in range(0, len(cre)):
         cre[u].move()
-    for u in range(0, len(pla)):
-        pla[u].breed()
-    for u in range(0, len(cre)):
-        cre[u].breed()
-    for u in range(0, len(cre)):
-        cre[u].eat()
-    lencre = len(cre)
-    for u in range(0, lencre):
-        if cre[lencre-u-1].x == -1:
-            del cre[lencre-u-1]
-    lenpla = len(pla)
-    for u in range(0, lenpla):
-        if pla[lenpla-u-1].x == -1:
-            del pla[lenpla-u-1]
-    for u in range(0, len(cre)):
-        cre[u].die()
-    lencre = len(cre)
-    for u in range(0, lencre):
-        if cre[lencre-u-1].x == -1:
-            del cre[lencre-u-1]
+    for plant in plants:
+        plant.breed()
+    for creature1 in cre:
+        for creature2 in cre:
+            breed(creature1,creature2)
+    for creature in cre:
+        creature.eat()
+    for creature in cre:
+        if(creature.tick()):
+            cre.remove(creature)
 
 ##Lifespan
 llc=[]
